@@ -1,0 +1,248 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>cuttingPlaneMetricLearning</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-01-13"><meta name="DC.source" content="cuttingPlaneMetricLearning.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">This function implements large scale relatively-paired  space analysis with cutting plane</a></li><li><a href="#3">We solve its equivelent cutting plane refourmation</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> W=cuttingPlaneMetricLearning(X,triplet,w,config)
+</pre><h2>This function implements large scale relatively-paired  space analysis with cutting plane<a name="2"></a></h2><div><ul><li>Column of X is an augmented instance, which may come from any modality;</li><li>Ax and Ay are projection matrix so that Wx=W*Ax and Wy=W*Ay;</li><li>Each row of triplet is of the structure (i,j,k), which means  <img src="cuttingPlaneMetricLearning_eq91284.png" alt="$distance (X_i,X_k) \ge distance (X_i,X_j)$">;</li><li>Each element of w is the coefficient of its corresponding triplet;</li><li>The config contains the parameters and options;</li><li>W=[Wx,Wy] is the projection mapping for both modalities</li></ul></div><h2>We solve its equivelent cutting plane refourmation<a name="3"></a></h2><p><img src="cuttingPlaneMetricLearning_eq18394.png" alt="$$min \frac{1}{2}||{\rm A}||_{\rm F}^2+\gamma_2  \xi $$"></p><p><img src="cuttingPlaneMetricLearning_eq79776.png" alt="$$s.t. \forall c \in \{0,1\}^N:  {\rm Tr}( \frac{1}{N} \sum {w_{ijk}{\rm C}_{ijk}}  {\rm A}) \ge \frac{\sum c_{ijk}}{N}-\xi $$"></p><pre class="codeinput">N=size(triplet,1);
+<span class="keyword">if</span> ~isfield(config,<span class="string">'numOuterIter'</span>)
+    config.numOuterIter=3;
+<span class="keyword">end</span>
+Delta_ik_o=X(:,triplet(:,1))-X(:,triplet(:,3));
+Delta_ij_o=X(:,triplet(:,1))-X(:,triplet(:,2));
+[Delta_ik,Delta_ij]=adaptiveSparse(Delta_ik_o,Delta_ij_o);
+
+d=size(X,1);
+W=eye(d);
+constraint=zeros(d,d,config.numOuterIter);
+weight=zeros(config.numOuterIter,1);
+<span class="keyword">if</span> config.verbose&gt;=2
+obj=zeros(config.numOuterIter,1);
+<span class="keyword">end</span>
+<span class="keyword">if</span> config.verbose&gt;=2
+   recordCuttingPlane=[];
+   tCP=tic;
+<span class="keyword">end</span>
+<span class="comment">% profile on</span>
+<span class="keyword">for</span> iter=1:config.numOuterIter
+</pre><pre class="codeinput">   <span class="comment">% substep one: finding most violated-constraits;</span>
+   flag=zeros(N,1);
+   <span class="keyword">if</span> config.verbose&gt;=1
+       tic;
+   <span class="keyword">end</span>
+   flag=adaptiveWeightedLoss(Delta_ik,Delta_ij,W);
+   flag=flag&lt;1;
+   <span class="keyword">if</span> config.verbose&gt;=1
+      timeCheck=toc;
+      fprintf(<span class="string">'The time for most violated constraint is %f .\n'</span>,timeCheck);
+   <span class="keyword">end</span>
+   <span class="comment">% construct constraint;</span>
+   index=find(flag);
+   <span class="comment">%length(index)</span>
+   rootW=(sqrt(w(index)))';
+   tmp1=Delta_ik_o(:,index);
+   tmp1=bsxfun(@times,tmp1,rootW);
+   tmp2=Delta_ij_o(:,index);
+   tmp2=bsxfun(@times,tmp2,rootW);
+   tmp=tmp1*tmp1'-tmp2*tmp2';
+<span class="comment">%   tmp=(*Delta_ik_o(:,index)'-Delta_ij_o(:,index)*Delta_ij_o(:,index)');</span>
+<span class="comment">%    toc</span>
+<span class="comment">%    tic</span>
+<span class="comment">%    tmp1=sumOutterProduct(Delta_ik,Delta_ij,flag);</span>
+<span class="comment">%    tmp1=vec2SymmetricM(tmp1,d);</span>
+<span class="comment">%    toc</span>
+<span class="comment">%    sum(sum(tmp-tmp1))</span>
+   <span class="comment">%weight(iter)=(length(index)/N);</span>
+   weight(iter)=(sum(w(index))/N);
+   constraint(:,:,iter)=tmp/N;
+   <span class="comment">% substep two: finding the optimal W currently.</span>
+   <span class="comment">% we optimize W using its current constraints.</span>
+</pre><p><img src="cuttingPlaneMetricLearning_eq57488.png" alt="$$\frac{1}{2}||{\rm A}||_{\rm F}^2+\gamma_2  \xi $$"></p><p><img src="cuttingPlaneMetricLearning_eq34574.png" alt="$$\forall t \;\;{\rm Tr}(constraints(:,:,t)*{\rm A}) \ge weight(t)-\xi$$"></p><pre class="codeinput">   W=dualOpt2(constraint(:,:,1:iter),weight(1:iter),config);
+
+   <span class="keyword">if</span> config.optimized
+   <span class="comment">% optimized W;</span>
+
+   <span class="keyword">end</span>
+
+   <span class="keyword">if</span> config.verbose&gt;=2
+   tic
+   obj(iter)=computeEnergy(W,Delta_ik,Delta_ij,w,config.param.gamma);
+   t=toc(tCP);
+   recordCuttingPlane=[recordCuttingPlane;t,obj(iter)];
+   timeEnergy=toc;
+   fprintf(<span class="string">'The time for energy is %f .\n'</span>,timeEnergy);
+   <span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="keyword">end</span>
+<span class="keyword">if</span> config.verbose&gt;=2
+     save([config.prefix,<span class="string">'recordCuttingPlane.mat'</span>],<span class="string">'recordCuttingPlane'</span>);
+figure
+plot(recordCuttingPlane(:,1),recordCuttingPlane(:,2));
+<span class="keyword">end</span>
+<span class="comment">% profile viewer</span>
+</pre><pre class="codeoutput">Error using cuttingPlaneMetricLearning (line 16)
+Not enough input arguments.
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function W=cuttingPlaneMetricLearning(X,triplet,w,config)
+%% This function implements large scale relatively-paired  space analysis with cutting plane
+% * Column of X is an augmented instance, which may come from any modality;
+% * Ax and Ay are projection matrix so that Wx=W*Ax and Wy=W*Ay;
+% * Each row of triplet is of the structure (i,j,k), which means  $distance (X_i,X_k) \ge distance (X_i,X_j)$;
+% * Each element of w is the coefficient of its corresponding triplet;
+% * The config contains the parameters and options;
+% * W=[Wx,Wy] is the projection mapping for both modalities 
+%% We solve its equivelent cutting plane refourmation
+% 
+% 
+% $$min \frac{1}{2}||{\rm A}||_{\rm F}^2+\gamma_2  \xi $$
+% 
+%
+% $$s.t. \forall c \in \{0,1\}^N:  {\rm Tr}( \frac{1}{N} \sum {w_{ijk}{\rm C}_{ijk}}  {\rm A}) \ge \frac{\sum c_{ijk}}{N}-\xi $$
+N=size(triplet,1);
+if ~isfield(config,'numOuterIter')
+    config.numOuterIter=3;
+end
+Delta_ik_o=X(:,triplet(:,1))-X(:,triplet(:,3));
+Delta_ij_o=X(:,triplet(:,1))-X(:,triplet(:,2));
+[Delta_ik,Delta_ij]=adaptiveSparse(Delta_ik_o,Delta_ij_o);
+
+d=size(X,1);
+W=eye(d);
+constraint=zeros(d,d,config.numOuterIter);
+weight=zeros(config.numOuterIter,1);
+if config.verbose>=2
+obj=zeros(config.numOuterIter,1);
+end
+if config.verbose>=2
+   recordCuttingPlane=[];
+   tCP=tic;   
+end
+% profile on
+for iter=1:config.numOuterIter
+   % substep one: finding most violated-constraits;
+   flag=zeros(N,1);
+   if config.verbose>=1
+       tic;
+   end
+   flag=adaptiveWeightedLoss(Delta_ik,Delta_ij,W);
+   flag=flag<1;
+   if config.verbose>=1
+      timeCheck=toc;
+      fprintf('The time for most violated constraint is %f .\n',timeCheck);
+   end
+   % construct constraint;
+   index=find(flag);
+   %length(index)
+   rootW=(sqrt(w(index)))';
+   tmp1=Delta_ik_o(:,index);
+   tmp1=bsxfun(@times,tmp1,rootW);
+   tmp2=Delta_ij_o(:,index);
+   tmp2=bsxfun(@times,tmp2,rootW);
+   tmp=tmp1*tmp1'-tmp2*tmp2';
+%   tmp=(*Delta_ik_o(:,index)'-Delta_ij_o(:,index)*Delta_ij_o(:,index)');
+%    toc
+%    tic
+%    tmp1=sumOutterProduct(Delta_ik,Delta_ij,flag);
+%    tmp1=vec2SymmetricM(tmp1,d);
+%    toc
+%    sum(sum(tmp-tmp1))
+   %weight(iter)=(length(index)/N);
+   weight(iter)=(sum(w(index))/N);
+   constraint(:,:,iter)=tmp/N;
+   % substep two: finding the optimal W currently.
+   % we optimize W using its current constraints.  
+  %%
+   % 
+   % $$\frac{1}{2}||{\rm A}||_{\rm F}^2+\gamma_2  \xi $$
+   % 
+   % 
+   % $$\forall t \;\;{\rm Tr}(constraints(:,:,t)*{\rm A}) \ge weight(t)-\xi$$
+   W=dualOpt2(constraint(:,:,1:iter),weight(1:iter),config);
+   
+   if config.optimized
+   % optimized W;
+   
+   end
+   
+   if config.verbose>=2
+   tic
+   obj(iter)=computeEnergy(W,Delta_ik,Delta_ij,w,config.param.gamma);
+   t=toc(tCP);
+   recordCuttingPlane=[recordCuttingPlane;t,obj(iter)];
+   timeEnergy=toc;
+   fprintf('The time for energy is %f .\n',timeEnergy);
+   end
+   
+end
+if config.verbose>=2
+     save([config.prefix,'recordCuttingPlane.mat'],'recordCuttingPlane');
+figure
+plot(recordCuttingPlane(:,1),recordCuttingPlane(:,2));
+end
+% profile viewer
+end
+##### SOURCE END #####
+--></body></html>

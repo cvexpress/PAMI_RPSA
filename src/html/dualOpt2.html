@@ -1,0 +1,184 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>dualOpt2</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-10-17"><meta name="DC.source" content="dualOpt2.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">This function optimizes the dual problem of the SDP (2nd variant)</a></li><li><a href="#3">We optimize the following dual problem</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span>  W=dualOpt2(constraint,weight,config)
+</pre><h2>This function optimizes the dual problem of the SDP (2nd variant)<a name="2"></a></h2><div><ul><li>constraint is a 3D matrix, where each slice (:,:,i) is a constraint;</li><li>weight is a vector;</li><li>The config contains the parameters and options;</li><li>The output W is projection mapping.</li></ul></div><h2>We optimize the following dual problem<a name="3"></a></h2><p><img src="dualOpt2_eq94218.png" alt="$$ min \frac{1}{2} ||{\rm Z}+\sum u_r {\rm C}_r||-\sum weight(r) u_r$$"></p><p><img src="dualOpt2_eq92273.png" alt="$$s.t. u_r \ge 0; {\rm Z}\succeq 0; \sum u_r \leq \gamma_2$$"></p><pre class="codeinput"><span class="keyword">persistent</span> u;
+<span class="keyword">persistent</span> Z;
+sz=size(constraint);
+num=length(weight);
+<span class="keyword">if</span> num==1
+u=zeros(num,1);
+Z=zeros(sz(1),sz(2));
+<span class="keyword">else</span>
+u=[u;0];
+<span class="keyword">end</span>
+
+Cr=reshape(constraint,sz(1)*sz(2),num);
+A=ones(1,num);
+lb=zeros(num,1);
+H=Cr'*Cr;
+b=config.param.gamma;
+<span class="keyword">if</span> ~isfield(config,<span class="string">'numInnerIter'</span>)
+    config.numInnerIter=2;
+<span class="keyword">end</span>
+
+
+opts = optimoptions(<span class="string">'quadprog'</span>,<span class="string">'Algorithm'</span>,<span class="string">'interior-point-convex'</span>,<span class="string">'Display'</span>,<span class="string">'off'</span>,<span class="string">'MaxIter'</span>,config.numQPIter);
+
+
+<span class="keyword">for</span> iter=1:config.numInnerIter
+
+<span class="comment">%x=quadprog(H,f,A,b,Aeq,beq,lb,ub,x0,options);</span>
+<span class="comment">% 1/2*x'*H*x + f'*x.</span>
+f=-weight+Cr'*Z(:);
+<span class="keyword">if</span> config.verbose&gt;=1
+tic;
+<span class="keyword">end</span>
+u=quadprog(H,f,A,b,[],[],lb,[],u,opts);
+<span class="keyword">if</span> config.verbose&gt;=1
+timeQP=toc;
+fprintf(<span class="string">'The time for quadprog is : %f\n'</span>, timeQP);
+<span class="keyword">end</span>
+
+<span class="keyword">if</span> config.verbose&gt;=1
+tic;
+<span class="keyword">end</span>
+[Z,W]=getOptimalZW(constraint,u);
+<span class="keyword">if</span> config.verbose&gt;=1
+timeEig=toc;
+fprintf(<span class="string">'The time for eigvalue decomposition is : %f\n'</span>, timeEig);
+<span class="keyword">end</span>
+
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">Error using dualOpt2 (line 15)
+Not enough input arguments.
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function  W=dualOpt2(constraint,weight,config)
+%% This function optimizes the dual problem of the SDP (2nd variant)
+% * constraint is a 3D matrix, where each slice (:,:,i) is a constraint;
+% * weight is a vector;
+% * The config contains the parameters and options;
+% * The output W is projection mapping.
+%% We optimize the following dual problem
+% 
+% $$ min \frac{1}{2} ||{\rm Z}+\sum u_r {\rm C}_r||-\sum weight(r) u_r$$
+% 
+% 
+% $$s.t. u_r \ge 0; {\rm Z}\succeq 0; \sum u_r \leq \gamma_2$$
+persistent u;
+persistent Z;
+sz=size(constraint);
+num=length(weight);
+if num==1
+u=zeros(num,1);
+Z=zeros(sz(1),sz(2));
+else
+u=[u;0];
+end
+
+Cr=reshape(constraint,sz(1)*sz(2),num);
+A=ones(1,num);
+lb=zeros(num,1);
+H=Cr'*Cr;
+b=config.param.gamma;
+if ~isfield(config,'numInnerIter')
+    config.numInnerIter=2;
+end
+
+
+opts = optimoptions('quadprog','Algorithm','interior-point-convex','Display','off','MaxIter',config.numQPIter);
+
+
+for iter=1:config.numInnerIter
+
+%x=quadprog(H,f,A,b,Aeq,beq,lb,ub,x0,options);
+% 1/2*x'*H*x + f'*x. 
+f=-weight+Cr'*Z(:);
+if config.verbose>=1
+tic;
+end
+u=quadprog(H,f,A,b,[],[],lb,[],u,opts);
+if config.verbose>=1
+timeQP=toc;
+fprintf('The time for quadprog is : %f\n', timeQP);
+end
+
+if config.verbose>=1
+tic;
+end
+[Z,W]=getOptimalZW(constraint,u);
+if config.verbose>=1
+timeEig=toc;
+fprintf('The time for eigvalue decomposition is : %f\n', timeEig);
+end
+
+end
+end
+##### SOURCE END #####
+--></body></html>

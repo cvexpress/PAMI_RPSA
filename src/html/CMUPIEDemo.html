@@ -1,0 +1,241 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>CMUPIEDemo</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-10-08"><meta name="DC.source" content="CMUPIEDemo.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">read training dataset</a></li></ul></div><pre class="codeinput">clc ;
+clear <span class="string">all</span>;
+close <span class="string">all</span>;
+addpath(genpath(pwd));
+</pre><h2>read training dataset<a name="2"></a></h2><pre class="codeinput">path=<span class="string">'.\data\cmupie.mat'</span>;
+pathdir=<span class="string">'.\result\'</span>;
+trinum=6;
+load(path);
+Labels=[1:68]';
+camera={<span class="string">'c02'</span> <span class="string">'c05'</span> <span class="string">'c07'</span> <span class="string">'c09'</span> <span class="string">'c11'</span> <span class="string">'c14'</span> <span class="string">'c22'</span> <span class="string">'c25'</span> <span class="string">'c27'</span> <span class="string">'c29'</span> <span class="string">'c31'</span> <span class="string">'c34'</span> <span class="string">'c37'</span>};
+trainingIndex=[1:34]';
+tmp=pose(:,:,1,1);
+scale=1;
+tmp=imresize(tmp,1/scale);
+l=size(tmp,1)*size(tmp,2);
+n=34;
+PHOTOS=zeros(n,l);
+SKETCHS=zeros(n,l);
+flag=[<span class="string">'_demo_'</span> num2str(trinum)];
+<span class="keyword">for</span> i=9  <span class="comment">% gallery c27</span>
+  <span class="keyword">for</span> j=10 <span class="comment">% probe c29</span>
+      fprintf(<span class="string">'i=%d  j=%d \n'</span>,i,j);
+      testIndex=setdiff([1:68], trainingIndex);
+      <span class="comment">% prepare training and test data for both gallery and probe</span>
+      <span class="keyword">for</span> k=1:size(pose,4)
+          tmp=pose(:,:,i,k);
+          tmp=imresize(tmp,1/scale);
+          PHOTOS(k,:)=tmp(:)';
+          tmp=pose(:,:,j,k);
+          tmp=imresize(tmp,1/scale);
+          SKETCHS(k,:)=tmp(:)';
+      <span class="keyword">end</span>
+      [feature1]=zscore(PHOTOS);
+      [feature2]=zscore(SKETCHS);
+
+      trainingX=feature1(trainingIndex,:);
+      trainingY=feature2(trainingIndex,:);
+      trainingLabel=Labels(trainingIndex);
+      testX=feature1(testIndex,:);
+      testY=feature2(testIndex,:);
+      testLabel=Labels(testIndex);
+      <span class="comment">% construct triplets to train model</span>
+      [X,Ax,Ay,triplet,type]=constructTriplets(trainingX',trainingY',trainingLabel,trainingLabel,[trinum 0 0 trinum]);
+
+      <span class="comment">% train model</span>
+      config.method=<span class="string">'SDP'</span>; <span class="comment">% cuttingPlane/SDP</span>
+      config.param.gamma=1;
+      config.numOuterIter=10;
+      config.verbose=2; <span class="comment">% 0-silence, 1 time record, 2 debug</span>
+      config.multiThread=1;
+      config.mexfunction=1;
+      <span class="keyword">if</span>(config.mexfunction==1)
+          config.multiThread=0;
+      <span class="keyword">end</span>
+      [Wx,Wy]=RPSA(X,Ax,Ay,triplet,config);
+      <span class="comment">% classify test sample according to KNN</span>
+      <span class="keyword">for</span> dimension=1:size(feature1,2)
+      testX_projection=Wx(1:dimension,:)*testX';
+      testY_projection=Wy(1:dimension,:)*testY';
+      k_neigbor=1;
+      Accuracy(dimension)=retrieval_kNN(testX_projection,testLabel, testY_projection,testLabel,k_neigbor);
+      <span class="comment">% fprintf('The accuracy for %s with %d-NN is %f\n',algorithm, k,Accuracy);</span>
+      <span class="keyword">end</span>
+      <span class="comment">%save Accuracy;</span>
+      save([pathdir, <span class="string">''</span>,camera{i},<span class="string">'_'</span>,camera{j},<span class="string">'_'</span>, num2str(scale),flag,<span class="string">'_RPSA_accuracy.mat'</span>],<span class="string">'Accuracy'</span>);
+      figure;
+      plot(Accuracy);
+      axis([1 length(Accuracy) 0 1.2]);
+      xlabel(<span class="string">'Num. of dimensions of the learned latent space'</span>);
+      ylabel(<span class="string">'Accuracy'</span>);
+
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">i=9  j=10 
+</pre><pre class="codeoutput">Undefined function or variable 'Delta_ik'.
+
+Error in SDPMetricLearning (line 13)
+u=lbfgsb(u,lb,ub,'computeObjective','computeGradient',...
+
+Error in RPSA (line 25)
+[W] = feval(fun, X,triplet,config);
+
+Error in CMUPIEDemo (line 56)
+      [Wx,Wy]=RPSA(X,Ax,Ay,triplet,config);
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+clc ;
+clear all;
+close all;
+addpath(genpath(pwd));
+%% read training dataset
+path='.\data\cmupie.mat';
+pathdir='.\result\';
+trinum=6;
+load(path);
+Labels=[1:68]';
+camera={'c02' 'c05' 'c07' 'c09' 'c11' 'c14' 'c22' 'c25' 'c27' 'c29' 'c31' 'c34' 'c37'};
+trainingIndex=[1:34]';
+tmp=pose(:,:,1,1);
+scale=1;
+tmp=imresize(tmp,1/scale);
+l=size(tmp,1)*size(tmp,2);
+n=34;
+PHOTOS=zeros(n,l);
+SKETCHS=zeros(n,l);
+flag=['_demo_' num2str(trinum)];
+for i=9  % gallery c27
+  for j=10 % probe c29
+      fprintf('i=%d  j=%d \n',i,j);
+      testIndex=setdiff([1:68], trainingIndex);
+      % prepare training and test data for both gallery and probe
+      for k=1:size(pose,4)
+          tmp=pose(:,:,i,k);
+          tmp=imresize(tmp,1/scale);
+          PHOTOS(k,:)=tmp(:)';
+          tmp=pose(:,:,j,k);
+          tmp=imresize(tmp,1/scale);
+          SKETCHS(k,:)=tmp(:)';
+      end
+      [feature1]=zscore(PHOTOS);
+      [feature2]=zscore(SKETCHS);
+      
+      trainingX=feature1(trainingIndex,:);
+      trainingY=feature2(trainingIndex,:);
+      trainingLabel=Labels(trainingIndex);
+      testX=feature1(testIndex,:);
+      testY=feature2(testIndex,:);
+      testLabel=Labels(testIndex);
+      % construct triplets to train model
+      [X,Ax,Ay,triplet,type]=constructTriplets(trainingX',trainingY',trainingLabel,trainingLabel,[trinum 0 0 trinum]);
+      
+      % train model 
+      config.method='SDP'; % cuttingPlane/SDP 
+      config.param.gamma=1;
+      config.numOuterIter=10;
+      config.verbose=2; % 0-silence, 1 time record, 2 debug
+      config.multiThread=1;
+      config.mexfunction=1;
+      if(config.mexfunction==1)
+          config.multiThread=0;
+      end
+      [Wx,Wy]=RPSA(X,Ax,Ay,triplet,config);
+      % classify test sample according to KNN
+      for dimension=1:size(feature1,2)
+      testX_projection=Wx(1:dimension,:)*testX';
+      testY_projection=Wy(1:dimension,:)*testY'; 
+      k_neigbor=1;
+      Accuracy(dimension)=retrieval_kNN(testX_projection,testLabel, testY_projection,testLabel,k_neigbor);
+      % fprintf('The accuracy for %s with %d-NN is %f\n',algorithm, k,Accuracy);
+      end
+      %save Accuracy;
+      save([pathdir, '',camera{i},'_',camera{j},'_', num2str(scale),flag,'_RPSA_accuracy.mat'],'Accuracy');
+      figure;
+      plot(Accuracy);
+      axis([1 length(Accuracy) 0 1.2]);
+      xlabel('Num. of dimensions of the learned latent space');
+      ylabel('Accuracy');
+      
+  end
+end
+
+
+  
+     
+      
+     
+    
+
+
+
+
+
+##### SOURCE END #####
+--></body></html>
