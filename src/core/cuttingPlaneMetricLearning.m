@@ -20,7 +20,6 @@ end
 Delta_ik_o=X(:,triplet(:,1))-X(:,triplet(:,3));
 Delta_ij_o=X(:,triplet(:,1))-X(:,triplet(:,2));
 [Delta_ik,Delta_ij]=adaptiveSparse(Delta_ik_o,Delta_ij_o);
-
 d=size(X,1);
 W=eye(d);
 constraint=zeros(d,d,config.numOuterIter);
