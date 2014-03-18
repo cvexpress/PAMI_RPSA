@@ -23,7 +23,8 @@ fun=@cuttingPlaneMetricLearning;
 
 end
 % Optimize the enery function;
-[W] = feval(fun, X,triplet,weight,config);
+[A] = feval(fun, X,triplet,weight,config);
+W=getProjection(A); % very important bug;
 % Recover the projection mapping for modality x and modality y; 
 Wx=W*Ax;
 Wy=W*Ay;

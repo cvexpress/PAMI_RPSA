@@ -6,13 +6,14 @@ function [f]=computeObjective(u,auxData)
 global recordSDP;
 
 N=length(u);
-[Delta_ik,Delta_ij,Delta_ik_s,Delta_ij_s,weight,config]=deal(auxData{:}); 
+[Co,Delta_ik,Delta_ij,Delta_ik_s,Delta_ij_s,weight,config]=deal(auxData{:}); 
 
 % Construct Ahat
 if config.verbose==3
    tAhat=tic;
 end
 Ahat=constructAhat(Delta_ik,Delta_ij,u);
+Ahat=Ahat+Co;
 if config.verbose==3
    a=toc(tAhat);
 end
@@ -39,6 +40,6 @@ if config.verbose==3
    d=toc(config.tSDP);
    recordSDP=[recordSDP;a,b,c,d];
 end
-global finalW;
-finalW=-Ahat_minus;
+global finalA;
+finalA=-Ahat_minus;
 end

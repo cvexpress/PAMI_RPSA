@@ -1,9 +1,9 @@
 function genericcallback (t, f, x,auxData)
 global recordSDP;
-global finalW;
-[Delta_ik,Delta_ij,Delta_ik_s,Delta_ij_s,weight,config]=deal(auxData{:}); 
+global finalA;
+[Co,Delta_ik,Delta_ij,Delta_ik_s,Delta_ij_s,weight,config]=deal(auxData{:}); 
 if config.verbose==2
-    obj=computeEnergy(finalW,Delta_ik_s,Delta_ij_s,weight,config.param.gamma);
+    obj=computeEnergy(finalA,Delta_ik_s,Delta_ij_s,weight,config.param.gamma,config.param.gamma3,Co);
     t1=toc(config.tSDP);
     recordSDP=[recordSDP;t1,obj];
 end

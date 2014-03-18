@@ -19,13 +19,13 @@ testY=database.T_te;
 %% train the model
 [X,Ax,Ay,triplet,type]=constructTriplets(trainingX',trainingY',trainingLabel,trainingLabel,[trinum trinum trinum trinum]);
 num=1000000;
-coeff=1;
+coeff=10;
 triplet=triplet(1:num,:);
 type=type(1:num,:);
 
 config.method='SDP'; % cuttingPlane/SDP 
 config.param.gamma=size(triplet,1)*coeff; % This is set based on cuttingplane
-config.param.gamma3=size(triplet,1)*coeff;  % the weight for pair-wise constraints;
+config.param.gamma3=size(triplet,1)*0;  % the weight for pair-wise constraints;
 ratio=size(trainingX,2)/size(trainingY,2);
 config.resultPath=pathdir;
 config.param.weight=[1,1,1,1];
