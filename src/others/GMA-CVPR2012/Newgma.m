@@ -382,7 +382,8 @@ switch lower(method)
             Wf = (Wf + Wf')/2;
         end
         opts.disp = 0;
-        [eigVec eigVal] = eigs(Wf,Df,min(options.Factor,min(Dim)),'LA',opts);
+%        [eigVec eigVal] = eigs(Wf,Df,min(options.Factor,min(Dim)),'LA',opts);
+        [eigVec eigVal] = eigs(Wf,Df);
 
         for i = 1:nV
             Wout{i,1}.Bases = eigVec(sum(Dim(1:i-1))+1:sum(Dim(1:i)),:);
