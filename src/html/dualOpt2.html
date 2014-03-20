@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>dualOpt2</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-10-17"><meta name="DC.source" content="dualOpt2.m"><style type="text/css">
+      --><title>dualOpt2</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-03-19"><meta name="DC.source" content="dualOpt2.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -65,8 +65,8 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">This function optimizes the dual problem of the SDP (2nd variant)</a></li><li><a href="#3">We optimize the following dual problem</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span>  W=dualOpt2(constraint,weight,config)
-</pre><h2>This function optimizes the dual problem of the SDP (2nd variant)<a name="2"></a></h2><div><ul><li>constraint is a 3D matrix, where each slice (:,:,i) is a constraint;</li><li>weight is a vector;</li><li>The config contains the parameters and options;</li><li>The output W is projection mapping.</li></ul></div><h2>We optimize the following dual problem<a name="3"></a></h2><p><img src="dualOpt2_eq94218.png" alt="$$ min \frac{1}{2} ||{\rm Z}+\sum u_r {\rm C}_r||-\sum weight(r) u_r$$"></p><p><img src="dualOpt2_eq92273.png" alt="$$s.t. u_r \ge 0; {\rm Z}\succeq 0; \sum u_r \leq \gamma_2$$"></p><pre class="codeinput"><span class="keyword">persistent</span> u;
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">This function optimizes the dual problem of the SDP (2nd variant)</a></li><li><a href="#3">We optimize the following dual problem</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span>  W=dualOpt2(Co,constraint,weight,config)
+</pre><h2>This function optimizes the dual problem of the SDP (2nd variant)<a name="2"></a></h2><div><ul><li>Co is pair-wise term;</li><li>constraint is a 3D matrix, where each slice (:,:,i) is a constraint;</li><li>weight is a vector;</li><li>The config contains the parameters and options;</li><li>The output W is projection mapping.</li></ul></div><h2>We optimize the following dual problem<a name="3"></a></h2><p><img src="dualOpt2_eq76123.png" alt="$$ min \frac{1}{2} ||{\rm Z}+\sum u_r {\rm C}_r-{\rm Co}||-\sum weight(r) u_r$$"></p><p><img src="dualOpt2_eq92273.png" alt="$$s.t. u_r \ge 0; {\rm Z}\succeq 0; \sum u_r \leq \gamma_2$$"></p><pre class="codeinput"><span class="keyword">persistent</span> u;
 <span class="keyword">persistent</span> Z;
 sz=size(constraint);
 num=length(weight);
@@ -114,20 +114,21 @@ fprintf(<span class="string">'The time for eigvalue decomposition is : %f\n'</sp
 <span class="keyword">end</span>
 
 <span class="keyword">end</span>
-</pre><pre class="codeoutput">Error using dualOpt2 (line 15)
+</pre><pre class="codeoutput">Error using dualOpt2 (line 16)
 Not enough input arguments.
 </pre><pre class="codeinput"><span class="keyword">end</span>
 </pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-function  W=dualOpt2(constraint,weight,config)
+function  W=dualOpt2(Co,constraint,weight,config)
 %% This function optimizes the dual problem of the SDP (2nd variant)
+% * Co is pair-wise term;
 % * constraint is a 3D matrix, where each slice (:,:,i) is a constraint;
 % * weight is a vector;
 % * The config contains the parameters and options;
 % * The output W is projection mapping.
 %% We optimize the following dual problem
 % 
-% $$ min \frac{1}{2} ||{\rm Z}+\sum u_r {\rm C}_r||-\sum weight(r) u_r$$
+% $$ min \frac{1}{2} ||{\rm Z}+\sum u_r {\rm C}_r-{\rm Co}||-\sum weight(r) u_r$$
 % 
 % 
 % $$s.t. u_r \ge 0; {\rm Z}\succeq 0; \sum u_r \leq \gamma_2$$

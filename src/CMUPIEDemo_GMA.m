@@ -48,22 +48,11 @@ for i=1:13  % gallery c27
       N=size(triplet,1);
       coeff=1;
       % train model 
-     config.method='SDP'; % cuttingPlane/SDP 
-     config.param.gamma=size(triplet,1)*coeff; % This is set based on cuttingplane
-     config.param.gamma3=size(triplet,1)*coeff*1;  % the weight for pair-wise constraints;
-     ratio=size(trainingX,2)/size(trainingY,2);
-     config.resultPath=pathdir;
-     config.param.weight=[1,1,1,1];
-     config.numOuterIter=100;
-     config.numInnerIter=1;
-     config.numQPIter=2;
-     config.optimized=1; % 0;
-     config.verbose=0; % 0-silence, 1 time record, 2 debug,3 statistic
-     config.prefix=[dataset config.method,'3_',num2str(trinum),'_',num2str(config.param.gamma/size(triplet,1))];
-     weight=generateWeight(type,config.param.weight);
-
+     config.method='GMA'; % GMA
+     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Using GMA
      
-      [Wx,Wy]=RPSA(X,Ax,Ay,triplet,weight,config);
+     
+     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       % classify test sample according to KNN
       for dimension=1:size(feature1,2)
       testX_projection=Wx(1:dimension,:)*testX';

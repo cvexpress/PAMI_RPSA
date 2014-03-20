@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>cuttingPlaneMetricLearning</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-01-13"><meta name="DC.source" content="cuttingPlaneMetricLearning.m"><style type="text/css">
+      --><title>cuttingPlaneMetricLearning</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-03-19"><meta name="DC.source" content="cuttingPlaneMetricLearning.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -73,7 +73,6 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 Delta_ik_o=X(:,triplet(:,1))-X(:,triplet(:,3));
 Delta_ij_o=X(:,triplet(:,1))-X(:,triplet(:,2));
 [Delta_ik,Delta_ij]=adaptiveSparse(Delta_ik_o,Delta_ij_o);
-
 d=size(X,1);
 W=eye(d);
 constraint=zeros(d,d,config.numOuterIter);
@@ -85,6 +84,7 @@ obj=zeros(config.numOuterIter,1);
    recordCuttingPlane=[];
    tCP=tic;
 <span class="keyword">end</span>
+Co=constructPairTerm(Delta_ij,w(:,2)'*(config.param.gamma3/N));
 <span class="comment">% profile on</span>
 <span class="keyword">for</span> iter=1:config.numOuterIter
 </pre><pre class="codeinput">   <span class="comment">% substep one: finding most violated-constraits;</span>
@@ -101,7 +101,7 @@ obj=zeros(config.numOuterIter,1);
    <span class="comment">% construct constraint;</span>
    index=find(flag);
    <span class="comment">%length(index)</span>
-   rootW=(sqrt(w(index)))';
+   rootW=(sqrt(w(index,1)))';
    tmp1=Delta_ik_o(:,index);
    tmp1=bsxfun(@times,tmp1,rootW);
    tmp2=Delta_ij_o(:,index);
@@ -115,11 +115,11 @@ obj=zeros(config.numOuterIter,1);
 <span class="comment">%    toc</span>
 <span class="comment">%    sum(sum(tmp-tmp1))</span>
    <span class="comment">%weight(iter)=(length(index)/N);</span>
-   weight(iter)=(sum(w(index))/N);
+   weight(iter)=(sum(w(index,1))/N);
    constraint(:,:,iter)=tmp/N;
    <span class="comment">% substep two: finding the optimal W currently.</span>
    <span class="comment">% we optimize W using its current constraints.</span>
-</pre><p><img src="cuttingPlaneMetricLearning_eq57488.png" alt="$$\frac{1}{2}||{\rm A}||_{\rm F}^2+\gamma_2  \xi $$"></p><p><img src="cuttingPlaneMetricLearning_eq34574.png" alt="$$\forall t \;\;{\rm Tr}(constraints(:,:,t)*{\rm A}) \ge weight(t)-\xi$$"></p><pre class="codeinput">   W=dualOpt2(constraint(:,:,1:iter),weight(1:iter),config);
+</pre><p><img src="cuttingPlaneMetricLearning_eq12350.png" alt="$$\frac{1}{2}||{\rm A}||_{\rm F}^2+\gamma_2  \xi +{\rm Tr}({\rm A}{\rm Co})$$"></p><p><img src="cuttingPlaneMetricLearning_eq34574.png" alt="$$\forall t \;\;{\rm Tr}(constraints(:,:,t)*{\rm A}) \ge weight(t)-\xi$$"></p><pre class="codeinput">   W=dualOpt2(Co,constraint(:,:,1:iter),weight(1:iter),config);
 
    <span class="keyword">if</span> config.optimized
    <span class="comment">% optimized W;</span>
@@ -128,7 +128,7 @@ obj=zeros(config.numOuterIter,1);
 
    <span class="keyword">if</span> config.verbose&gt;=2
    tic
-   obj(iter)=computeEnergy(W,Delta_ik,Delta_ij,w,config.param.gamma);
+   obj(iter)=computeEnergy(W,Delta_ik,Delta_ij,w,config.param.gamma,config.param.gamma3,Co);
    t=toc(tCP);
    recordCuttingPlane=[recordCuttingPlane;t,obj(iter)];
    timeEnergy=toc;
@@ -168,7 +168,6 @@ end
 Delta_ik_o=X(:,triplet(:,1))-X(:,triplet(:,3));
 Delta_ij_o=X(:,triplet(:,1))-X(:,triplet(:,2));
 [Delta_ik,Delta_ij]=adaptiveSparse(Delta_ik_o,Delta_ij_o);
-
 d=size(X,1);
 W=eye(d);
 constraint=zeros(d,d,config.numOuterIter);
@@ -180,6 +179,7 @@ if config.verbose>=2
    recordCuttingPlane=[];
    tCP=tic;   
 end
+Co=constructPairTerm(Delta_ij,w(:,2)'*(config.param.gamma3/N));
 % profile on
 for iter=1:config.numOuterIter
    % substep one: finding most violated-constraits;
@@ -196,7 +196,7 @@ for iter=1:config.numOuterIter
    % construct constraint;
    index=find(flag);
    %length(index)
-   rootW=(sqrt(w(index)))';
+   rootW=(sqrt(w(index,1)))';
    tmp1=Delta_ik_o(:,index);
    tmp1=bsxfun(@times,tmp1,rootW);
    tmp2=Delta_ij_o(:,index);
@@ -210,17 +210,17 @@ for iter=1:config.numOuterIter
 %    toc
 %    sum(sum(tmp-tmp1))
    %weight(iter)=(length(index)/N);
-   weight(iter)=(sum(w(index))/N);
+   weight(iter)=(sum(w(index,1))/N);
    constraint(:,:,iter)=tmp/N;
    % substep two: finding the optimal W currently.
    % we optimize W using its current constraints.  
   %%
    % 
-   % $$\frac{1}{2}||{\rm A}||_{\rm F}^2+\gamma_2  \xi $$
+   % $$\frac{1}{2}||{\rm A}||_{\rm F}^2+\gamma_2  \xi +{\rm Tr}({\rm A}{\rm Co})$$
    % 
    % 
    % $$\forall t \;\;{\rm Tr}(constraints(:,:,t)*{\rm A}) \ge weight(t)-\xi$$
-   W=dualOpt2(constraint(:,:,1:iter),weight(1:iter),config);
+   W=dualOpt2(Co,constraint(:,:,1:iter),weight(1:iter),config);
    
    if config.optimized
    % optimized W;
@@ -229,7 +229,7 @@ for iter=1:config.numOuterIter
    
    if config.verbose>=2
    tic
-   obj(iter)=computeEnergy(W,Delta_ik,Delta_ij,w,config.param.gamma);
+   obj(iter)=computeEnergy(W,Delta_ik,Delta_ij,w,config.param.gamma,config.param.gamma3,Co);
    t=toc(tCP);
    recordCuttingPlane=[recordCuttingPlane;t,obj(iter)];
    timeEnergy=toc;

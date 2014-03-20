@@ -31,7 +31,6 @@ if config.verbose>=2
    recordCuttingPlane=[];
    tCP=tic;   
 end
-Co=constructPairTerm(Delta_ij,w(:,2)'*(config.param.gamma3/N));
 % profile on
 for iter=1:config.numOuterIter
    % substep one: finding most violated-constraits;
@@ -48,7 +47,7 @@ for iter=1:config.numOuterIter
    % construct constraint;
    index=find(flag);
    %length(index)
-   rootW=(sqrt(w(index,1)))';
+   rootW=(sqrt(w(index)))';
    tmp1=Delta_ik_o(:,index);
    tmp1=bsxfun(@times,tmp1,rootW);
    tmp2=Delta_ij_o(:,index);
@@ -62,17 +61,17 @@ for iter=1:config.numOuterIter
 %    toc
 %    sum(sum(tmp-tmp1))
    %weight(iter)=(length(index)/N);
-   weight(iter)=(sum(w(index,1))/N);
+   weight(iter)=(sum(w(index))/N);
    constraint(:,:,iter)=tmp/N;
    % substep two: finding the optimal W currently.
    % we optimize W using its current constraints.  
   %%
    % 
-   % $$\frac{1}{2}||{\rm A}||_{\rm F}^2+\gamma_2  \xi +{\rm Tr}({\rm A}{\rm Co})$$
+   % $$\frac{1}{2}||{\rm A}||_{\rm F}^2+\gamma_2  \xi $$
    % 
    % 
    % $$\forall t \;\;{\rm Tr}(constraints(:,:,t)*{\rm A}) \ge weight(t)-\xi$$
-   W=dualOpt2(Co,constraint(:,:,1:iter),weight(1:iter),config);
+   W=dualOpt2(constraint(:,:,1:iter),weight(1:iter),config);
    
    if config.optimized
    % optimized W;
@@ -81,7 +80,7 @@ for iter=1:config.numOuterIter
    
    if config.verbose>=2
    tic
-   obj(iter)=computeEnergy(W,Delta_ik,Delta_ij,w,config.param.gamma,config.param.gamma3,Co);
+   obj(iter)=computeEnergy(Co,W,Delta_ik,Delta_ij,w,config.param.gamma);
    t=toc(tCP);
    recordCuttingPlane=[recordCuttingPlane;t,obj(iter)];
    timeEnergy=toc;

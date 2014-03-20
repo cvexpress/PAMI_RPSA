@@ -1,12 +1,13 @@
-function  W=dualOpt2(constraint,weight,config)
+function  W=dualOpt2(Co,constraint,weight,config)
 %% This function optimizes the dual problem of the SDP (2nd variant)
+% * Co is pair-wise term;
 % * constraint is a 3D matrix, where each slice (:,:,i) is a constraint;
 % * weight is a vector;
 % * The config contains the parameters and options;
 % * The output W is projection mapping.
 %% We optimize the following dual problem
 % 
-% $$ min \frac{1}{2} ||{\rm Z}+\sum u_r {\rm C}_r||-\sum weight(r) u_r$$
+% $$ min \frac{1}{2} ||{\rm Z}+\sum u_r {\rm C}_r-{\rm Co}||-\sum weight(r) u_r$$
 % 
 % 
 % $$s.t. u_r \ge 0; {\rm Z}\succeq 0; \sum u_r \leq \gamma_2$$
@@ -38,7 +39,7 @@ for iter=1:config.numInnerIter
 
 %x=quadprog(H,f,A,b,Aeq,beq,lb,ub,x0,options);
 % 1/2*x'*H*x + f'*x. 
-f=-weight+Cr'*Z(:);
+f=-weight+Cr'*(Z(:)-Co(:));
 if config.verbose>=1
 tic;
 end
@@ -51,7 +52,7 @@ end
 if config.verbose>=1
 tic;
 end
-[Z,W]=getOptimalZW(constraint,u);
+[Z,W]=getOptimalZW(Co,constraint,u);
 if config.verbose>=1
 timeEig=toc;
 fprintf('The time for eigvalue decomposition is : %f\n', timeEig);
