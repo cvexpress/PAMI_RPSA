@@ -4,8 +4,8 @@ close all;
 addpath(genpath(pwd));
 warning off;
 %% read training dataset
-dataPath='.\data\CUFSF\';
-pathdir='.\result\';
+dataPath='..\..\data\CUFSF\';
+pathdir='..\..\result\';
 trinum=120;
 trainingLabel =importdata([dataPath 'trainingLabel.mat']);
 testLabel = importdata([dataPath 'testLabel.mat']);
@@ -29,18 +29,19 @@ type=type(1:num,:);
 coeff=0.1;
 config.method='SDP'; % cuttingPlane/SDP 
 config.param.gamma=size(triplet,1)*coeff;
+config.param.gamma3=size(triplet,1)*coeff*0.0001;
 ratio=size(trainingX,2)/size(trainingY,2);
 config.param.weight=[1,1,ratio^2,ratio^2];
 config.numOuterIter=50;
 config.numInnerIter=1;
 config.numQPIter=5;
 config.optimized=1; % 0;
-config.verbose=2; % 0-silence, 1 time record, 2 debug,3 statistic
+config.verbose=0; % 0-silence, 1 time record, 2 debug,3 statistic
 config.prefix=[config.method,'1_',num2str(num),'_',num2str(config.param.gamma/size(triplet,1))];
 weight=generateWeight(type,config.param.weight);
 [Wx,Wy]=RPSA(X,Ax,Ay,triplet,weight,config);
       % classify test sample according to KNN
-for dimension=1:100
+for dimension=1:5:100
 testX_projection=Wx(1:dimension,:)*testX';
 testY_projection=Wy(1:dimension,:)*testY';  
 k_neigbor=1;

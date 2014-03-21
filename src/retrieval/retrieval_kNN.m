@@ -5,15 +5,10 @@ limit=max(trainedView1Lable);
 num=0;
 for iter=1:c1
 %   distance=zeros(c,1);
-  distance=pdist2(trainedView1',testView2(:,iter)');
-
-  
+  distance=pdist2(trainedView1',testView2(:,iter)');  
 %   for innerIter=1:c
 %     distance(1,innerIter)=norm(testView2(:,iter)-trainedView1(:,innerIter),2);
 %   end
-  
-  
-
   %% sort distance
   [B,INX]=sort(distance);
   INX=trainedView1Lable(INX);
