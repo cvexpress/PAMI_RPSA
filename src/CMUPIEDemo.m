@@ -58,7 +58,7 @@ for i=1:13  % gallery c27
      config.numInnerIter=1;
      config.numQPIter=2;
      config.optimized=1; % 0;
-     config.verbose=0; % 0-silence, 1 time record, 2 debug,3 statistic
+     config.verbose=2; % 0-silence, 1 time record, 2 debug,3 statistic
      config.prefix=[dataset config.method,'3_',num2str(trinum),'_',num2str(config.param.gamma/size(triplet,1))];
      weight=generateWeight(type,config.param.weight);
 

@@ -21,10 +21,10 @@ w=[w,ones(n,1)];
 distance=Delta_ij.*Delta_ij;
 distance=sqrt(sum(distance));
 distance=distance';
-maxv=max(distance)/0.01;
+maxv=max(distance)/;
 ratio=exp(-distance/maxv);
 
-% w(:,2)=w(:,2).*(ratio);
-% w(:,1)=w(:,2);
+w(:,2)=w(:,2).*(ratio);
+w(:,1)=w(:,2);
 
 end
